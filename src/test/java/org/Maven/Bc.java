@@ -2,6 +2,7 @@ package org.Maven;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -16,6 +17,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -38,6 +40,10 @@ public static void MaxWindow() {
 
 public static void GetUrl(String url) {
 	driver.get(url);}
+
+public static void SendKeysEnter(WebElement element , String s) {
+	VisibilityOfElement(element);
+	element.sendKeys(s,Keys.ENTER);}
 
 public static void SendKeys(WebElement element , String s) {
 	VisibilityOfElement(element);
@@ -68,6 +74,7 @@ public static void Clear(WebElement element) {
 public  static String GetText(WebElement element) {
 	VisibilityOfElement(element);
 	String text = element.getText();
+	System.out.println(text);
 	return text;}
 
 public static WebElement ByName(String Avalue) {
@@ -116,7 +123,8 @@ public static void SelectByValue(WebElement element, String value) {
 
 public static void JsSendKeys(WebElement element, String text) {
 	JavascriptExecutor executor = (JavascriptExecutor)driver;
-	executor.executeScript(text, element);
+//	executor.executeScript(text, element);
+	executor.executeScript("arguments[0].setAttribute('value'+'"+text+"');", element);
 
 }
 
@@ -179,4 +187,34 @@ public static String GetCell(String sn, int rn, int cn ) throws IOException {
 		break;
 	}return s;
 }
+
+public void UpdateCellData(String sn, int rn, int cn, String old, String update ) throws IOException {
+	File f = new File("C:\\Users\\LENOVO\\eclipse-workspace\\MavenProject\\ExcelSheets\\Login.xlsx");
+	FileInputStream fis = new FileInputStream(f);
+	@SuppressWarnings("resource")
+	Workbook wb = new XSSFWorkbook(fis);
+	Sheet ss = wb.getSheet(sn);
+	Row r = ss.getRow(rn);
+	Cell c = r.getCell(cn);
+	String sv = c.getStringCellValue();
+	if (sv.equals(old)) {
+		c.setCellValue(update);
+	}
+	FileOutputStream fos =  new FileOutputStream(f);
+	wb.write(fos);
+}
+
+public void CreateCellAndSetCellData(String sn, int rn, int cn, String data) throws IOException {
+	File f = new File("C:\\Users\\LENOVO\\eclipse-workspace\\MavenProject\\ExcelSheets\\Login.xlsx");
+	FileInputStream fos = new FileInputStream(f);
+	@SuppressWarnings("resource")
+	Workbook wb = new XSSFWorkbook(fos);
+	Sheet ss = wb.getSheet(sn);
+	Row r = ss.getRow(rn);
+	Cell c = r.createCell(cn);
+	c.setCellValue(data);
+	FileOutputStream fos1 = new FileOutputStream(f);
+	wb.write(fos1);
+}
+
 }
